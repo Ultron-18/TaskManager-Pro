@@ -120,16 +120,23 @@ taskmanager-pro/
 ├── public/
 │   ├── index.html              # HTML template
 │   └── favicon.ico             # Application icon
+taskmanager-pro/
 ├── src/
 │   ├── components/
-│   │   └── TaskManager.jsx     # Main component
-│   ├── styles/
-│   │   └── index.css           # Global styles
+│   │   ├── TaskManager/
+│   │   │   ├── TaskCard.jsx
+│   │   │   ├── TaskForm.jsx
+│   │   │   ├── TaskFilters.jsx
+│   │   │   ├── TaskStats.jsx
+│   │   │   ├── Navbar.jsx
+│   │   │   └── Notifications.jsx
+│   │   └── TaskManager.jsx
 │   ├── utils/
-│   │   ├── taskReducer.js      # State management logic
-│   │   └── helpers.js          # Utility functions
-│   ├── App.jsx                 # Root component
-│   └── main.jsx                # Vite entry point
+│   │   ├── taskReducer.js
+│   │   ├── helpers.js
+│   │   └── constants.js
+│   ├── App.jsx
+│   └── main.jsx              # Vite entry point
 ├── vite.config.js              # Vite configuration
 ├── package.json                # Dependencies and scripts
 └── README.md                   # This file
