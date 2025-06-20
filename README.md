@@ -120,7 +120,6 @@ taskmanager-pro/
 ├── public/
 │   ├── index.html              # HTML template
 │   └── favicon.ico             # Application icon
-taskmanager-pro/
 ├── src/
 │   ├── components/
 │   │   ├── TaskManager/
