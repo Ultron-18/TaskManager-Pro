@@ -97,6 +97,7 @@ const TaskManager = () => {
     tags: []
   });
   const [newTag, setNewTag] = useState('');
+  const [showExportDropdown, setShowExportDropdown] = useState(false);
 
   // Filter and sort tasks
   const filteredTasks = tasks
@@ -187,6 +188,61 @@ const TaskManager = () => {
     a.click();
     URL.revokeObjectURL(url);
     addNotification('Tasks exported successfully!', 'success');
+  };
+
+  // Export tasks as CSV for spreadsheet import
+  const exportTasksAsCSV = () => {
+    if (!tasks.length) return;
+    const replacer = (key, value) => (value === null ? '' : value);
+    const header = [
+      'id', 'title', 'description', 'priority', 'category', 'completed', 'favorite', 'archived', 'dueDate', 'createdAt', 'tags'
+    ];
+    const csv = [
+      header.join(','),
+      ...tasks.map(row =>
+        header.map(fieldName => {
+          let value = row[fieldName];
+          if (Array.isArray(value)) return '"' + value.join(';') + '"';
+          if (value instanceof Date) return value.toISOString();
+          return JSON.stringify(value, replacer);
+        }).join(',')
+      )
+    ].join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'tasks.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+    addNotification('Tasks exported as CSV!', 'success');
+  };
+
+  // Export tasks as TXT for spreadsheet import
+  const exportTasksAsTXT = () => {
+    if (!tasks.length) return;
+    const header = [
+      'id', 'title', 'description', 'priority', 'category', 'completed', 'favorite', 'archived', 'dueDate', 'createdAt', 'tags'
+    ];
+    const txt = [
+      header.join('\t'),
+      ...tasks.map(row =>
+        header.map(fieldName => {
+          let value = row[fieldName];
+          if (Array.isArray(value)) return value.join(';');
+          if (value instanceof Date) return value.toISOString();
+          return value !== undefined && value !== null ? value : '';
+        }).join('\t')
+      )
+    ].join('\r\n');
+    const blob = new Blob([txt], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'tasks.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+    addNotification('Tasks exported as TXT!', 'success');
   };
 
   const addTag = () => {
@@ -502,15 +558,36 @@ const TaskManager = () => {
               {currentView === 'stats' && 'Your productivity insights and analytics'}
             </p>
           </div>
-          <div className="hidden sm:flex items-center gap-3">
-            <button
-              onClick={exportTasks}
-              className={`p-2 rounded-lg transition-colors ${
-                darkMode ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' : 'bg-white text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              <Download className="w-5 h-5" />
-            </button>
+          <div className="hidden sm:flex items-center gap-3 relative">
+            <div className="relative">
+              <button
+                onClick={() => setShowExportDropdown(v => !v)}
+                className={`p-2 rounded-lg transition-colors ${
+                  darkMode ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+                title="Export tasks"
+              >
+                <Download className="w-5 h-5" />
+              </button>
+              {showExportDropdown && (
+                <div className={`absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50 ${darkMode ? 'bg-gray-800 border-gray-700' : ''}`}
+                  onMouseLeave={() => setShowExportDropdown(false)}
+                >
+                  <button
+                    onClick={() => { exportTasksAsCSV(); setShowExportDropdown(false); }}
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm"
+                  >
+                    Export as CSV
+                  </button>
+                  <button
+                    onClick={() => { exportTasksAsTXT(); setShowExportDropdown(false); }}
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm"
+                  >
+                    Export as TXT
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
